@@ -1,22 +1,36 @@
 class List
   def initialize
-    @all_tasks = []
+    @all_tasks = {}
     @save_dir = 'database.txt'
+    @new_id = 0
   end
 
-  def add_task(tasks)
-    @all_tasks << tasks
+  def add_task(task)
+    @all_tasks[@new_id] = task
+    @new_id += 1
   end
 
   def show_all_tasks
-    @all_tasks.each do |task|
+    @all_tasks.each do |_, task|
       puts task.description
     end
   end
 
+  def complete(task_id)
+    @all_tasks[task_id].completed = true if !@all_tasks[task_id].nil?
+  end
+
+  def delete(task_id)
+    @all_tasks.delete(task_id)
+  end
+
+  def update(task_id, description)
+    @all_tasks[task_id].description = description
+  end
+
   def save(filename = @save_dir)
     File.open(filename, 'w') do |file|
-      @all_tasks.each do |task|
+      @all_tasks.each do |_, task|
         file.puts task.description
       end
     end
@@ -28,9 +42,9 @@ class List
 
     case command
     when 'add'
-      add_task Task.new params.join(' ')
+      add_task Task.new(params.join(' '))
     when 'complete'
-      # TODO
+      complete params.join(' ').to_i
     when 'print'
       show_all_tasks
     when 'read'
@@ -41,6 +55,10 @@ class List
     when 'save'
       filename = params.join ' '
       save filename
+    when 'delete'
+      delete params.join(' ').to_i
+    when 'update'
+      update(params[0].to_i, params[1])
     else
       puts 'don\'t know this command'
     end
@@ -49,11 +67,14 @@ class List
 end
 
 class Task
-  attr_reader :description
+  attr_accessor :description
+  attr_accessor :completed
 
   def initialize(description)
     @description = description
+    @completed = false
   end
+
 end
 
 my_list = List.new

@@ -3,10 +3,6 @@ class List
     @all_tasks = []
   end
 
-  def create_a_list
-    # TODO
-  end
-
   def add_task(tasks)
     @all_tasks << tasks
   end
@@ -17,17 +13,18 @@ class List
     end
   end
 
-  def save_task
-    # TODO
+  def save(filename)
+    File.open(filename, 'w') do |file|
+      @all_tasks.each do |task|
+        file.puts task.description
+      end
+    end
   end
+
 end
 
 class Task
   attr_reader :description
-
-  def create_task_item
-    # TOOD
-  end
 
   def initialize(description)
     @description = description
@@ -59,8 +56,9 @@ when 'read'
   File.open(filename, 'r').each do |line|
     first_list.add_task Task.new(line.chomp)
   end
+when 'save'
+  filename = params.join ' '
+  first_list.save filename
 else
-  # TODO
+  puts 'don\'t know this command'
 end
-
-first_list.show_all_tasks

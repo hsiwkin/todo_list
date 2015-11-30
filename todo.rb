@@ -76,7 +76,3 @@ class Task
   end
 
 end
-
-my_list = List.new
-my_list.console_api
-my_list.save
